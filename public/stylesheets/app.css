@@ -1,0 +1,108 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+#header {
+    background-color: darkgrey;
+    position: fixed;
+    height: 50px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+    border-width: 0px;
+    border-bottom: 1px;
+    border-color: black;
+    border-style: solid;
+}
+
+#title {
+    flex-grow: 1;
+    text-align: center;
+}
+
+#top_page_left {
+    flex-basis: 10px;
+    flex-grow: 1;
+}
+
+#top_page_user {
+    flex-basis: 10px;
+    text-align: right;
+    flex-grow: 1;
+}
+
+#log_popup {
+    position: fixed;
+    top: 50px;
+    right: 0px;
+    width: 200px;
+    visibility: hidden;
+}
+
+#connect_form {
+}
+
+#form_submit {
+    width: 100%;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#list_messages {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+}
+
+#new_message {
+    width: min(700px, 60vw);
+    padding: 10px 10px 10px 10px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: black;
+    border-style: solid;
+    white-space: pre-wrap;
+}
+
+#new_message textarea {
+    resize: none;
+    width: 80%;
+    height: 100px;
+}
+
+#new_message_submit {
+    display: block;
+    text-align: right;
+}
+
+.reaction_button {
+    border-width: 1px;
+    border-radius: 4px;
+    border-color: dimgray;
+    border-style: solid;
+}
+
+.message {
+    width: min(700px, 60vw);
+    padding: 10px 10px 10px 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: black;
+    border-style: solid;
+    white-space: pre-wrap;
+}
