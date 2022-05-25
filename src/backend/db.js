@@ -85,6 +85,16 @@ const db = {
             } else {
             }
         })
+        
+        db.client.query(`
+                ALTER TABLE comments
+                ADD COLUMN origin bigint REFERENCES messages;
+                `, (err, res) => {
+            if (err) {
+                console.log(err);
+            } else {
+            }
+        })
 
         createSomeUsers(db).then(
             () => { createSomeMessages(db); }
@@ -112,7 +122,7 @@ const db = {
     getTableMessagesCount: async (count, user_id) => {
         const query = await db.client.query(`
         WITH last_messages AS(
-            SELECT m.id, m.message, u.username AS author, m.date, m.comment_ids, array_length(m.likes, 1) AS likes, array_length(m.dislikes, 1) AS dislikes,
+            SELECT m.id, m.message, m.comment_ids, u.username AS author, m.date, m.comment_ids, array_length(m.likes, 1) AS likes, array_length(m.dislikes, 1) AS dislikes,
             bool_and(
                 likes IS NOT NULL AND '` + user_id + `' = ANY(likes)
             ) AS liked,
@@ -128,6 +138,18 @@ const db = {
         FROM last_messages
         ORDER BY date ASC;`
         );
+        return query.rows;
+    },
+    getComments: async function(message_id, user_id) {
+        const query = await db.client.query(`
+            SELECT comments.id, comments.message, users.username AS author, comments.date
+            FROM comments LEFT OUTER JOIN users ON comments.author = users.id
+            WHERE comments.id IN (
+                SELECT unnest(messages.comment_ids)
+                FROM messages
+                WHERE messages.id = ${message_id}
+            );
+        `);
         return query.rows;
     },
     insertUser: async function(username, password) {
@@ -148,6 +170,28 @@ const db = {
         db.client.query(`
             INSERT INTO messages(message, author, date)
             VALUES('` + message + "','" + author + "','" + date.getTime() + "');"
+        , (err, res) => {
+            if (err) {
+                console.log(err);
+            } else {
+                
+            }
+        })
+    },
+    insertComment: function(comment, message_id, author, date) {
+        comment = comment.replaceAll("'", "''");
+        db.client.query(`
+            BEGIN;
+            WITH new_comment_id AS (
+                INSERT INTO comments(message, author, date, origin)
+                VALUES('` + comment + "','" + author + "','" + date.getTime() + "','" + message_id + `')
+                RETURNING id
+            )
+            UPDATE messages
+            SET comment_ids = array_append(comment_ids, (SELECT * FROM new_comment_id))
+            WHERE id= +` + message_id + `;
+            COMMIT;
+            `
         , (err, res) => {
             if (err) {
                 console.log(err);
@@ -267,6 +311,8 @@ function createSomeMessages(db) {
     db.setLike(4, 5);
     db.setLike(5, 5);
     db.setLike(6, 5);
+    db.insertComment("A nice comment", 1, 4, new Date(Date.UTC(2022, 04, 02, 14, 02)))
+    db.insertComment("Another nice comment", 1, 4, new Date(Date.UTC(2022, 04, 02, 14, 04)))
 }
 
 module.exports = db;

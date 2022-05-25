@@ -27,7 +27,9 @@ function ListMessages() {
     const messages = [];
     for (let message of messagesState) {
         messages.push(
-            <Message author={message.author} key={message.id} id={message.id} message={message.message} date={message.date} likes={message.likes} dislikes={message.dislikes} liked={message.liked} disliked={message.disliked}></Message>
+            <Message author={message.author} key={message.id} id={message.id} message={message.message}
+            date={message.date} likes={message.likes} dislikes={message.dislikes} liked={message.liked} disliked={message.disliked}
+            comments={message.comment_ids}></Message>
         );
     }
     return(

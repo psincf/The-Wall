@@ -81,6 +81,13 @@ app.get('/', function(req, res) {
         }
     });
 });
+app.post('/comment_message', function(req, res) {
+    if (req.user === undefined) { res.send("Not ok"); return }
+    const date = new Date();
+    const hash = crypto.createHash('sha256').update(req.body.message + req.user.id + date.getMilliseconds() + Math.random()).digest('hex');
+    database.insertComment(req.body.message, req.body.message_id, req.user.id || "anonymous", date);
+    res.send("Ok");
+});
 app.post('/new_message', function(req, res) {
     if (req.user === undefined) { res.send("Not ok"); return }
     const date = new Date();
@@ -105,6 +112,17 @@ app.post('/dislike_message', function(req, res) {
         database.unsetDislike(req.user.id || -1, req.body.message_id);
     }
     res.send("Ok");
+});
+app.get('/get_comments', function(req, res) {
+    var user_id = -1;
+    if (req.user !== undefined) { user_id = req.user.id }
+    if (req.query.message_id) {
+        database.getComments(req.query.message_id, user_id).then(
+            (c) => { res.send(c) }
+        )
+    } else {
+        res.send("Not ok")
+    }
 });
 app.get('/get_messages', function(req, res) {
     var user_id = -1;

@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    command: >
+      sh -c "pg_ctlcluster 11 my_cluster start
+      && npm install
+      && npm run build_front
+      && npm run server"
+    ports:
+      - 3000:3000
+    working_dir: /app
+    volumes:
+      - ./:/app
